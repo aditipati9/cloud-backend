@@ -1,41 +1,40 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      python: 3.9
   pre_build:
     commands:
-      - echo "Pre build commands for deploying backend to ECR"
+      - echo "Logging in to AWS ECR"
       - aws --version
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112996721.dkr.ecr.us-east-1.amazonaws.com
-      - REPOSITORY_URI=471112996721.dkr.ecr.us-east-1.amazonaws.com/cloud-backend
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - export REPOSITORY_URI=471112996721.dkr.ecr.us-east-1.amazonaws.com/cloud-backend
+      - export IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+
+  install:
+    runtime-versions:
+      python: 3.8
+
+    commands:
+     # install npm
+
   build:
     commands:
-      - echo "Building Backend Docker image"
+      - echo "Build started on $(date)"
+      - echo "Building Docker image"
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "Pushing Backend Docker image to ECR"
+      - echo "Build completed on $(date)"
       - echo "Pushing to $REPOSITORY_URI"
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - echo Writing image defination file...
-      # Give your container a name
-      - DOCKER_CONTAINER_NAME=backend-container
-      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinations.json
-      - echo printing imagedefinations.json
-      - cat imagedefinations.json
+      - echo "Writing image definition file..."
+      - export DOCKER_CONTAINER_NAME=backend-container
+      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - echo "Printing imagedefinitions.json"
+      - cat imagedefinitions.json
 
 artifacts:
   files:
-    - requirements.txt
-    - models.py
-    - mainapp.py
-    - ParentModule.py
-    - instance/*
     - imagedefinitions.json
-
