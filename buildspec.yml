@@ -8,7 +8,7 @@ phases:
     commands:
       - echo "Pre build commands for deploying backend to ECR"
       - aws --version
-      - $aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112996721.dkr.ecr.us-east-1.amazonaws.com
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112996721.dkr.ecr.us-east-1.amazonaws.com
       - REPOSITORY_URI=471112996721.dkr.ecr.us-east-1.amazonaws.com/cloud-backend
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
