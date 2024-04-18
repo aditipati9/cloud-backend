@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+  pre_build:
+    commands:
+      - echo "Pre build commands for deploying backend to ECR"
+      - aws --version
+      - $(aws ecr get-login --no-include-email --region your-region)
+      - REPOSITORY_URI=
+      - IMAGE_TAG=
+  build:
+    commands:
+      - echo "Installing Python dependencies"
+      - pip install --no-cache-dir -r requirements.txt
+      - echo "Building Backend Docker image"
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo "Pushing Backend Docker image to ECR"
+      - echo "Pushing to $REPOSITORY_URI"
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+artifacts:
+  files: []
