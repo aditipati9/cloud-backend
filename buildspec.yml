@@ -13,8 +13,6 @@ phases:
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
-      - echo "Installing Python dependencies"
-      - pip install --no-cache-dir -r requirements.txt
       - echo "Building Backend Docker image"
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
@@ -25,6 +23,12 @@ phases:
       - echo "Pushing to $REPOSITORY_URI"
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image defination file...
+      # Give your container a name
+      - DOCKER_CONTAINER_NAME=frontend-container
+      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinations.json
+      - echo printing imagedefinations.json
+      - cat imagedefinations.json
 
 artifacts:
   files:
@@ -33,3 +37,5 @@ artifacts:
     - mainapp.py
     - ParentModule.py
     - instance/*
+    - imagedefinitions.json
+
