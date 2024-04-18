@@ -31,4 +31,5 @@ artifacts:
     - requirements.txt
     - models.py
     - mainapp.py
+    - ParentModule.py
     - instance/*
