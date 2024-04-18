@@ -27,4 +27,8 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
 
 artifacts:
-  files: []
+  files:
+    - requirements.txt
+    - models.py
+    - mainapp.py
+    - instance/*
