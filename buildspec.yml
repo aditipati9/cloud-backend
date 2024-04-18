@@ -25,7 +25,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image defination file...
       # Give your container a name
-      - DOCKER_CONTAINER_NAME=frontend-container
+      - DOCKER_CONTAINER_NAME=backend-container
       - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinations.json
       - echo printing imagedefinations.json
       - cat imagedefinations.json
